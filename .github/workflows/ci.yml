@@ -1,0 +1,121 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Install libvips (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvips-dev llvm
+
+      - name: Install libvips (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install vips llvm
+          echo "LLVM_PATH=$(brew --prefix llvm)/bin" >> $GITHUB_ENV
+
+      - name: Get dependencies
+        run: dart pub get
+
+      - name: Regenerate bindings (verify they match committed)
+        if: runner.os != 'Windows'
+        run: |
+          dart run ffigen --config ffigen.yaml
+          git diff --exit-code lib/src/bindings/ || \
+            (echo "ffigen output changed — run 'dart run ffigen' and commit the result" && exit 1)
+
+      - name: Analyze
+        run: dart analyze --fatal-infos
+
+      - name: Run tests
+        run: dart test
+
+      - name: Run example (non-Windows)
+        if: runner.os != 'Windows'
+        run: |
+          dart run example/example.dart \
+            test/fixtures/sample.jpg \
+            /tmp/example_out.jpg \
+            200
+          ls -lh /tmp/example_out.jpg
+
+      - name: publish dry-run
+        if: runner.os == 'Linux'
+        run: dart pub publish --dry-run
+
+  # Memory leak check on Linux using Valgrind
+  valgrind:
+    name: Valgrind leak check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Install libvips + valgrind
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libvips-dev valgrind llvm
+
+      - name: Get dependencies
+        run: dart pub get
+
+      - name: Run tests under Valgrind
+        run: |
+          dart compile exe test/memory_test.dart -o /tmp/memory_test
+          valgrind \
+            --leak-check=full \
+            --error-exitcode=1 \
+            --suppressions=.valgrind.supp \
+            /tmp/memory_test
+        continue-on-error: true
+
+  # pana score check
+  pana:
+    name: pana score
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Install libvips
+        run: sudo apt-get update && sudo apt-get install -y libvips-dev
+
+      - name: Get dependencies
+        run: dart pub get
+
+      - name: Run pana
+        run: |
+          dart pub global activate pana
+          dart pub global run pana --no-warning . || true
