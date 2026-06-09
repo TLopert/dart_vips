@@ -1,0 +1,92 @@
+name: LibVipsOps
+description: 'Auto-generated bindings for dart_vips C wrappers. DO NOT EDIT BY HAND.'
+output: 'lib/src/bindings/libvips_bindings.dart'
+compiler-opts:
+  - '-I/opt/homebrew/include'
+  - '-I/opt/homebrew/include/glib-2.0'
+  - '-I/opt/homebrew/lib/glib-2.0/include'
+  - '-I/usr/local/include'
+  - '-I/usr/include'
+
+headers:
+  entry-points:
+    - 'src/dart_vips_ops.h'
+  include-directives:
+    - '**dart_vips_ops.h'
+    - '**vips/vips.h'
+    - '**vips/basic_types.h'
+    - '**vips/image.h'
+    - '**vips/object.h'
+    - '**vips/version.h'
+    - '**vips/error.h'
+    - '**vips/colour.h'
+    - '**vips/resample.h'
+    - '**vips/conversion.h'
+    - '**vips/foreign.h'
+    - '**vips/type.h'
+
+functions:
+  include:
+    - vips_init
+    - vips_shutdown
+    - vips_error_buffer
+    - vips_error_clear
+    - vips_version
+    - dart_vips_image_new_from_file
+    - dart_vips_image_write_to_file
+    - dart_vips_image_from_buffer
+    - dart_vips_image_to_buffer
+    - dart_vips_thumbnail
+    - dart_vips_thumbnail_buffer
+    - dart_vips_resize
+    - dart_vips_reduce
+    - dart_vips_crop
+    - dart_vips_smartcrop
+    - dart_vips_embed
+    - dart_vips_flip
+    - dart_vips_rot
+    - dart_vips_similarity
+    - dart_vips_autorot
+    - dart_vips_flatten
+    - dart_vips_colourspace
+    - dart_vips_icc_transform
+    - dart_vips_composite2
+    - dart_vips_image_get_string
+    - dart_vips_image_get_fields
+    - dart_vips_unref_void
+    - dart_vips_image_get_int
+    - dart_vips_image_get_double
+    - dart_vips_image_set_int
+    - dart_vips_image_set_double
+    - dart_vips_image_set_string
+    - dart_vips_image_remove
+    - dart_g_object_ref
+    - dart_g_object_unref
+    - dart_g_free
+
+structs:
+  include:
+    - VipsImage
+    - VipsObject
+
+enums:
+  include:
+    - VipsInteresting
+    - VipsInterpretation
+    - VipsBlendMode
+    - VipsBandFormat
+    - VipsAngle
+    - VipsDirection
+    - VipsExtend
+    - VipsCoding
+
+preamble: |
+  // AUTO-GENERATED FILE — DO NOT EDIT BY HAND.
+  // Run `dart run ffigen --config ffigen.yaml` to regenerate.
+  // ignore_for_file: type=lint, unused_element, camel_case_types, non_constant_identifier_names
+  // ignore_for_file: unnecessary_import, prefer_final_fields, unused_import
+  // ignore_for_file: unused_field, duplicate_ignore
+
+sort: true
+use-supported-typedefs: true
+silence-enum-warning: true

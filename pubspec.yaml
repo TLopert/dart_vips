@@ -1,0 +1,31 @@
+name: dart_vips
+description: >-
+  Fast image processing for Dart and Flutter desktop/server via libvips FFI.
+  Resize, thumbnail, convert, crop, composite and more — without ImageMagick bloat.
+version: 0.1.0
+repository: https://github.com/your-org/dart_vips
+issue_tracker: https://github.com/your-org/dart_vips/issues
+topics:
+  - images
+  - image-processing
+  - libvips
+  - ffi
+  - thumbnail
+
+environment:
+  sdk: "^3.10.0"
+
+dependencies:
+  ffi: ^2.2.0
+  path: ^1.9.0
+  # Hook dependencies for hook/build.dart.
+  # Must be in regular `dependencies` (not dev_dependencies) because the
+  # Dart/Flutter SDK executes hooks at *build* time, not only during testing.
+  code_assets: ^1.2.1
+  crypto: ^3.0.6
+  hooks: ^2.0.2
+dev_dependencies:
+  ffigen: ^20.1.1
+  lints: ^6.0.0
+  test: ^1.25.6
+
